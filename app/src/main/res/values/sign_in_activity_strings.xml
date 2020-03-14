@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="sign_in_activity_welcome">Welcome to Party Music Queue, please sign in</string>
+    <string name="sign_in_activity_sign_in_button"> Sign In</string>
+
+</resources>
