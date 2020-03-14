@@ -4,21 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".ui.SignInActivity">
 
         <TextView
-            android:id="@+id/hello_world_text_View"
+            android:id="@+id/welcome_text_View"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hello World!"
+            android:text="@string/sign_in_activity_welcome"
             android:layout_centerInParent="true"/>
 
         <Button
-            android:id="@+id/log_out_button"
+            android:id="@+id/sign_in_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="LOG OUT"
+            android:text="@string/sign_in_activity_sign_in_button"
             android:layout_centerHorizontal="true"
-            android:layout_below="@+id/hello_world_text_View" />
+            android:layout_below="@+id/welcome_text_View"/>
 
 </RelativeLayout>
