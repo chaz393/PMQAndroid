@@ -5,7 +5,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.partymusicq.android.R
-import com.partymusicq.android.UtilAuth
+import com.partymusicq.android.util.UtilAuth
 
 open class BaseActivity : AppCompatActivity(){
 

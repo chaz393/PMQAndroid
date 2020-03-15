@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
+import com.partymusicq.android.ui.fragments.EmptyFragment
 import com.partymusicq.android.ui.fragments.PlayerFragment
 
 class SimpleFragmentPagerAdapter(val context: Context,
@@ -12,9 +13,9 @@ class SimpleFragmentPagerAdapter(val context: Context,
     override fun getItem(p0: Int): Fragment {
         return when(p0){
             //TODO: set these to the other fragments when they get made
-            0 -> PlayerFragment.newInstance()
+            0 -> EmptyFragment()
             1 -> PlayerFragment.newInstance()
-            else -> PlayerFragment.newInstance()
+            else -> EmptyFragment()
         }
     }
 
