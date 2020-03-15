@@ -2,7 +2,6 @@ package com.partymusicq.android.ui
 
 import android.app.Activity
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -11,7 +10,6 @@ import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
 import com.partymusicq.android.R
-import com.partymusicq.android.UtilAuth
 import com.partymusicq.android.intent.IntentExtra
 
 class SignInActivity : BaseActivity() {

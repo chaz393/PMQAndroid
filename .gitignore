@@ -12,3 +12,6 @@
 /captures
 .externalNativeBuild
 .cxx
+/.idea/*
+/spotify-app-remote/build/*
+/app/google-services.json
