@@ -1,5 +1,6 @@
 package com.partymusicq.android.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -55,8 +56,9 @@ class HomeActivity : BaseActivity() {
     private fun setupOnClicks() {
         hostButton.setOnClickListener(object: View.OnClickListener {
             override fun onClick(p0: View?) {
-                Toast.makeText(p0?.context, "host pressed", Toast.LENGTH_SHORT).show()
-                //TODO: do something
+                //TODO: un hardcode this once we get all the DB stuff working
+                val intent = Intent(p0?.context, PartyActivity::class.java)
+                startActivity(intent)
             }
         })
 
@@ -69,6 +71,7 @@ class HomeActivity : BaseActivity() {
     }
 
     private fun fetchCurrentQueues() {
+        //TODO: actually fetch these once we get DB stuff working
         currentQueues.add(Queue("Really long name just to test the constraints because line wrapping could break things", "test2"))
         currentQueues.add(Queue("test3", "test4"))
         currentQueues.add(Queue("test5", "test5"))
