@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="home_activity_current_queue_room_code_label">Room Code: %s</string>
+    <string name="home_activity_current_queue_party_name_label">Room Name: %s</string>
+    <string name="home_activity_party_name_label">Party Name:</string>
+    <string name="home_activity_room_code_label">Room Code:</string>
+    <string name="home_activity_host_button">Host</string>
+    <string name="home_activity_join_button">Join</string>
+    <string name="home_activity_current_queue_label">Current Rooms:</string>
+
+</resources>
