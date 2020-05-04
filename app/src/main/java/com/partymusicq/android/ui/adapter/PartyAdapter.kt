@@ -6,35 +6,35 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
 import com.partymusicq.android.databinding.CurrentQueueListItemBinding
-import com.partymusicq.android.pojo.Queue
+import com.partymusicq.android.pojo.Party
 
-open class CurrentQueueAdapter(query: Query, private val listener: OnQueueSelectedListener) :
-    FirestoreAdapter<CurrentQueueAdapter.CurrentQueueViewHolder>(query) {
+open class PartyAdapter(query: Query, private val listener: OnQueueSelectedListener) :
+    FirestoreAdapter<PartyAdapter.ViewHolder>(query) {
 
     interface OnQueueSelectedListener {
         fun onQueueSelected(queue: DocumentSnapshot)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CurrentQueueViewHolder {
-        return CurrentQueueViewHolder(
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        return ViewHolder(
             CurrentQueueListItemBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
             )
         )
     }
 
-    override fun onBindViewHolder(holder: CurrentQueueViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getSnapshot(position), listener)
     }
 
-    class CurrentQueueViewHolder(private val binding: CurrentQueueListItemBinding) :
+    class ViewHolder(private val binding: CurrentQueueListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(
             snapshot: DocumentSnapshot,
             listener: OnQueueSelectedListener?
         ) {
-            val queue = snapshot.toObject(Queue::class.java) ?: return
+            val queue = snapshot.toObject(Party::class.java) ?: return
             binding.currentQueuePartyName.text = queue.name
             binding.currentQueueRoomCode.text = queue.passCode
             binding.root.setOnClickListener {

@@ -11,9 +11,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.partymusicq.android.R
-import com.partymusicq.android.ui.adapter.CurrentQueueAdapter
+import com.partymusicq.android.ui.adapter.PartyAdapter
+import com.partymusicq.android.ui.handler.HostPartyHandler
 
-class HomeActivity : BaseActivity(), CurrentQueueAdapter.OnQueueSelectedListener {
+class HomeActivity : BaseActivity(), PartyAdapter.OnQueueSelectedListener {
 
     private val PARTY_NAME = "partyName"
     private val ROOM_CODE = "roomCode"
@@ -26,7 +27,7 @@ class HomeActivity : BaseActivity(), CurrentQueueAdapter.OnQueueSelectedListener
     private lateinit var currentQueuesCont: View
 
     private lateinit var firestore : FirebaseFirestore
-    private lateinit var adapter : CurrentQueueAdapter
+    private lateinit var adapter : PartyAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,7 +68,10 @@ class HomeActivity : BaseActivity(), CurrentQueueAdapter.OnQueueSelectedListener
     }
 
     private fun setupOnClicks() {
-        hostButton.setOnClickListener { p0 ->
+        hostButton.setOnClickListener { view ->
+            Toast.makeText(view?.context, "host pressed", Toast.LENGTH_SHORT).show()
+            val handler = HostPartyHandler(partyNameEditText.text.toString())
+            val partyId = handler.handle()
             val intent = Intent(p0?.context, PartyActivity::class.java)
             startActivity(intent)
         }
@@ -85,7 +89,7 @@ class HomeActivity : BaseActivity(), CurrentQueueAdapter.OnQueueSelectedListener
 
     private fun bindAdapter() {
         val query = firestore.collection("parties")
-        adapter = CurrentQueueAdapter(query, this)
+        adapter = PartyAdapter(query, this)
         currentQueuesRecyclerView.adapter = adapter
     }
 
