@@ -3,11 +3,11 @@ package com.partymusicq.android.pojo
 import com.google.firebase.firestore.IgnoreExtraProperties
 
 @IgnoreExtraProperties
-data class Queue(
+data class Party(
     val name: String? = null,
     val owner: String? = null,
     val passCode: String? = null,
-    val id: String? = null) {
+    var id: String? = null) {
 
     companion object {
         const val FIELD_NAME = "name"
