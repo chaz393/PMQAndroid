@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.partymusicq.android.R
+import com.partymusicq.android.pojo.Party
 import com.partymusicq.android.ui.adapter.PartyAdapter
 import com.partymusicq.android.ui.handler.HostPartyHandler
 
@@ -73,6 +74,7 @@ class HomeActivity : BaseActivity(), PartyAdapter.OnQueueSelectedListener {
             val handler = HostPartyHandler(partyNameEditText.text.toString())
             val partyId = handler.handle()
             val intent = Intent(view?.context, PartyActivity::class.java)
+            intent.putExtra("partyId", partyId)
             startActivity(intent)
         }
 
@@ -94,6 +96,14 @@ class HomeActivity : BaseActivity(), PartyAdapter.OnQueueSelectedListener {
     }
 
     override fun onQueueSelected(queue: DocumentSnapshot) {
-        Toast.makeText(this, "yuuuuuh", Toast.LENGTH_LONG).show()
+        val party = queue.toObject(Party::class.java)
+        if(party == null) {
+            Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show()
+            return
+        }
+        val partyId = party.id
+        val intent = Intent(this, PartyActivity::class.java)
+        intent.putExtra("partyId", partyId)
+        startActivity(intent)
     }
 }
