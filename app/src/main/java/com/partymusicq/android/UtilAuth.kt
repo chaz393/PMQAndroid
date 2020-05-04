@@ -6,7 +6,7 @@ import com.firebase.ui.auth.AuthUI
 import com.partymusicq.android.intent.IntentExtra
 import com.partymusicq.android.ui.SignInActivity
 
-class UtilAuth() {
+class UtilAuth {
 
     companion object {
         fun signOut(context: Context) {

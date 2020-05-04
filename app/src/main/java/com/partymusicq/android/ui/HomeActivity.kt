@@ -7,11 +7,12 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FirebaseFirestore
 import com.partymusicq.android.R
-import com.partymusicq.android.pojo.Queue
 import com.partymusicq.android.ui.adapter.CurrentQueueAdapter
 
-class HomeActivity : BaseActivity() {
+class HomeActivity : BaseActivity(), CurrentQueueAdapter.OnQueueSelectedListener {
 
     private val PARTY_NAME = "partyName"
     private val ROOM_CODE = "roomCode"
@@ -23,7 +24,8 @@ class HomeActivity : BaseActivity() {
     private lateinit var currentQueuesRecyclerView: RecyclerView
     private lateinit var currentQueuesCont: View
 
-    private var currentQueues = ArrayList<Queue>()
+    private lateinit var firestore : FirebaseFirestore
+    private lateinit var adapter : CurrentQueueAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,9 +43,20 @@ class HomeActivity : BaseActivity() {
             roomCodeEditTExt.setText(savedInstanceState.getString(ROOM_CODE) ?: "")
         }
 
-        fetchCurrentQueues()
+        firestore = FirebaseFirestore.getInstance()
+
         setupOnClicks()
         setupAdapter()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        adapter.startListening()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        adapter.stopListening()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -53,26 +66,15 @@ class HomeActivity : BaseActivity() {
     }
 
     private fun setupOnClicks() {
-        hostButton.setOnClickListener(object: View.OnClickListener {
-            override fun onClick(p0: View?) {
-                Toast.makeText(p0?.context, "host pressed", Toast.LENGTH_SHORT).show()
-                //TODO: do something
-            }
-        })
+        hostButton.setOnClickListener { p0 ->
+            Toast.makeText(p0?.context, "host pressed", Toast.LENGTH_SHORT).show()
+            //TODO: do something
+        }
 
-        joinButton.setOnClickListener(object: View.OnClickListener {
-            override fun onClick(p0: View?) {
-                Toast.makeText(p0?.context, "join pressed", Toast.LENGTH_SHORT).show()
-                //TODO: do something
-            }
-        })
-    }
-
-    private fun fetchCurrentQueues() {
-        currentQueues.add(Queue("Really long name just to test the constraints because line wrapping could break things", "test2"))
-        currentQueues.add(Queue("test3", "test4"))
-        currentQueues.add(Queue("test5", "test5"))
-        currentQueues.add(Queue("test6", "test6"))
+        joinButton.setOnClickListener { p0 ->
+            Toast.makeText(p0?.context, "join pressed", Toast.LENGTH_SHORT).show()
+            //TODO: do something
+        }
     }
 
     private fun setupAdapter() {
@@ -81,7 +83,12 @@ class HomeActivity : BaseActivity() {
     }
 
     private fun bindAdapter() {
-        currentQueuesRecyclerView.adapter = CurrentQueueAdapter(this, currentQueues)
+        val query = firestore.collection("parties")
+        adapter = CurrentQueueAdapter(query, this)
+        currentQueuesRecyclerView.adapter = adapter
     }
 
+    override fun onQueueSelected(queue: DocumentSnapshot) {
+        Toast.makeText(this, "yuuuuuh", Toast.LENGTH_LONG).show()
+    }
 }
