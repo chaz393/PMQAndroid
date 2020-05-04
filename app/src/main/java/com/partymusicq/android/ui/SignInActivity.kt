@@ -24,11 +24,7 @@ class SignInActivity : BaseActivity() {
         setContentView(R.layout.sign_in_activity)
         signInButton = findViewById(R.id.sign_in_button)
 
-        signInButton.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(p0: View?) {
-                doSignIn()
-            }
-        })
+        signInButton.setOnClickListener { doSignIn() }
 
         val signedOut = intent.getBooleanExtra(IntentExtra.SIGNED_OUT, false)
         if (!signedOut) {

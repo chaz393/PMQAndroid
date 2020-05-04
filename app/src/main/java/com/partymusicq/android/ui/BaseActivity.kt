@@ -11,7 +11,7 @@ open class BaseActivity : AppCompatActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTitle("Party Music Queue")
+        title = "Party Music Queue"
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
