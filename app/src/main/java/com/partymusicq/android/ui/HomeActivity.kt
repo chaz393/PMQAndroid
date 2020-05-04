@@ -72,7 +72,7 @@ class HomeActivity : BaseActivity(), PartyAdapter.OnQueueSelectedListener {
             Toast.makeText(view?.context, "host pressed", Toast.LENGTH_SHORT).show()
             val handler = HostPartyHandler(partyNameEditText.text.toString())
             val partyId = handler.handle()
-            val intent = Intent(p0?.context, PartyActivity::class.java)
+            val intent = Intent(view?.context, PartyActivity::class.java)
             startActivity(intent)
         }
 
