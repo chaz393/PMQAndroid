@@ -1,5 +1,6 @@
 package com.partymusicq.android.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -71,7 +72,8 @@ class HomeActivity : BaseActivity(), PartyAdapter.OnQueueSelectedListener {
             Toast.makeText(view?.context, "host pressed", Toast.LENGTH_SHORT).show()
             val handler = HostPartyHandler(partyNameEditText.text.toString())
             val partyId = handler.handle()
-            // move to the party screen now
+            val intent = Intent(p0?.context, PartyActivity::class.java)
+            startActivity(intent)
         }
 
         joinButton.setOnClickListener { p0 ->
