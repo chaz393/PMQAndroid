@@ -1,4 +1,4 @@
-package com.partymusicq.android
+package com.partymusicq.android.util
 
 import android.content.Context
 import android.content.Intent

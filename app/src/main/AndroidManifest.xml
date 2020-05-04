@@ -17,6 +17,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.HomeActivity" />
+        <activity android:name=".ui.PartyActivity" />
     </application>
 
 </manifest>
