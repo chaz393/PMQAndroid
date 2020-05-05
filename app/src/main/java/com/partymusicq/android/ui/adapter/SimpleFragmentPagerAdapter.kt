@@ -26,9 +26,9 @@ class SimpleFragmentPagerAdapter(val context: Context,
     override fun getPageTitle(position: Int): CharSequence? {
         return when(position){
             //TODO: also set these to correct titles
-            0 -> "test"
+            0 -> "Queue"
             1 -> "Player"
-            else -> "test3"
+            else -> "Search"
         }
     }
 }
