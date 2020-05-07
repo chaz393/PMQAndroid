@@ -3,6 +3,7 @@ package com.partymusicq.android.ui.handler
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.partymusicq.android.pojo.Party
+import com.partymusicq.android.pojo.Song
 import kotlin.math.floor
 
 class HostPartyHandler(private val partyName: String) {
@@ -39,5 +40,14 @@ class HostPartyHandler(private val partyName: String) {
         val newId = documentRef.id
         party.id = newId
         documentRef.set(party)
+
+        //TODO remove this
+        //setup a queue in the db to test with
+        var songRef = firestore.collection("parties/" + party.id +"/queue").document()
+        songRef.set(Song("spotify:track:2KtS31kaWNHs12Q5B43Ixh", 0))
+        songRef = firestore.collection("parties/" + party.id +"/queue").document()
+        songRef.set(Song("spotify:track:492PZFHvGTm3RZZYeeUVWT", 1))
+        songRef = firestore.collection("parties/" + party.id +"/queue").document()
+        songRef.set(Song("spotify:track:0ILIuCVbnekvEFpQCWhP8a", 2))
     }
 }
