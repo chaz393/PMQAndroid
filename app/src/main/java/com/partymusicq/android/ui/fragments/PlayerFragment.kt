@@ -16,7 +16,7 @@ import com.partymusicq.android.R
 import com.partymusicq.android.enums.SpotifyEventEnum
 import com.partymusicq.android.event.SpotifyEvent
 import com.partymusicq.android.pojo.Song
-import com.partymusicq.android.pojo.SongList
+import com.partymusicq.android.pojo.SongQueue
 import com.partymusicq.android.ui.adapter.TrackProgress
 import com.partymusicq.android.util.UtilPlayer
 import com.partymusicq.android.util.UtilSpotify
@@ -37,7 +37,7 @@ class PlayerFragment : Fragment(), UtilSpotify.SpotifyListener {
     private lateinit var nextButton: AppCompatImageButton
 
     private lateinit var firestore: FirebaseFirestore
-    private lateinit var songList: SongList
+    private lateinit var songQueue: SongQueue
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.player_fragment, container, false)
@@ -110,7 +110,7 @@ class PlayerFragment : Fragment(), UtilSpotify.SpotifyListener {
                 songList.add(Song(song, document.id))
             }
         }
-        this.songList = SongList(songList)
+        this.songQueue = SongQueue(songList)
     }
 
     private fun setupOnClicks() {
@@ -132,9 +132,9 @@ class PlayerFragment : Fragment(), UtilSpotify.SpotifyListener {
     }
 
     private fun playNextSong() {
-        if (songList.queueIsNotEmpty()) {
-            UtilSpotify.startPlaying(songList.getFirstSongUri())
-            songList.popList()
+        if (songQueue.queueIsNotEmpty()) {
+            UtilSpotify.startPlaying(songQueue.getFirstSongUri())
+            songQueue.popQueue()
         } else {
             Toast.makeText(context, "Queue is empty", Toast.LENGTH_SHORT).show()
         }
