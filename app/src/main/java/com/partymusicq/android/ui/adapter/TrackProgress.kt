@@ -27,7 +27,7 @@ class TrackProgress(val seekBar: SeekBar,
 
         override fun onStopTrackingTouch(seekBar: SeekBar) {
             val progress = seekBar.progress.toLong()
-            if (UtilSpotify.spotifyAppRemote?.isConnected != true) {
+            if (UtilSpotify.getSpotifyAppRemote()?.isConnected != true) {
                 UtilSpotify.logIntoSpotify(SpotifyEvent(SpotifyEventEnum.LoginAndSeek, progress))
             } else {
                 UtilSpotify.seekTo(progress)
@@ -43,7 +43,7 @@ class TrackProgress(val seekBar: SeekBar,
         override fun run() {
             var progress = seekBar.progress
             if (progress - lastSyncTime > RESYNC_DURATION) {
-                UtilSpotify.spotifyAppRemote?.playerApi?.playerState?.setResultCallback {
+                UtilSpotify.getSpotifyAppRemote()?.playerApi?.playerState?.setResultCallback {
                     progress = it.playbackPosition.toInt()
                     lastSyncTime = progress.toLong()
                     seekBar.progress = progress
