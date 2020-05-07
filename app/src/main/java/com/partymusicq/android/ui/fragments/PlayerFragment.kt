@@ -88,7 +88,7 @@ class PlayerFragment : Fragment(), UtilSpotify.SpotifyListener {
         val partyId = activity?.intent?.getStringExtra("partyId")
         val songRef = firestore.collection("parties/$partyId/queue")
         songRef.get().addOnSuccessListener {
-            initSongList(it)
+            initSongQueue(it)
             initSpotify()
         }
     }
@@ -102,7 +102,7 @@ class PlayerFragment : Fragment(), UtilSpotify.SpotifyListener {
         }
     }
 
-    private fun initSongList(querySnapshot: QuerySnapshot) {
+    private fun initSongQueue(querySnapshot: QuerySnapshot) {
         val songList = ArrayList<Song>()
         for (document in querySnapshot.documents) {
             val song = document.toObject(Song::class.java)
