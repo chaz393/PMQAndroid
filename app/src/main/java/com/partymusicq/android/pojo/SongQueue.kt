@@ -6,6 +6,11 @@ class SongQueue(private var songQueue: ArrayList<Song>) {
         sortQueue()
     }
 
+    fun setSongListAndSort(songQueue: ArrayList<Song>) {
+        this.songQueue = songQueue
+        sortQueue()
+    }
+
     fun popQueue() {
         if (songQueue.isNotEmpty()) {
             songQueue.removeAt(0)
@@ -34,6 +39,21 @@ class SongQueue(private var songQueue: ArrayList<Song>) {
         val newSong = Song(uri, position)
         songQueue.add(newSong)
         //todo add song to db and get doc id to store on song
+    }
+
+    fun getNextSongAndPop(): String? {
+        val uri = getFirstSongUri()
+        popQueue()
+        return uri
+    }
+
+    fun songIsInQueue(song: Song): Boolean {
+        for (songInQueue in songQueue) {
+            if (songInQueue.uri == song.uri) {
+                return true
+            }
+        }
+        return false
     }
 
     private fun sortQueue() {

@@ -133,8 +133,7 @@ class PlayerFragment : Fragment(), UtilSpotify.SpotifyListener {
 
     private fun playNextSong() {
         if (songQueue.queueIsNotEmpty()) {
-            UtilSpotify.startPlaying(songQueue.getFirstSongUri())
-            songQueue.popQueue()
+            UtilSpotify.startPlaying(songQueue.getNextSongAndPop())
         } else {
             Toast.makeText(context, "Queue is empty", Toast.LENGTH_SHORT).show()
         }
