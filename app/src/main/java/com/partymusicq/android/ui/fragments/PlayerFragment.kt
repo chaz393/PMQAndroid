@@ -111,10 +111,10 @@ class PlayerFragment : Fragment(), UtilSpotify.SpotifyListener {
 
     private fun initSpotify() {
         UtilSpotify.init(this, context)
-        if (!UtilSpotify.spotifyIsConnected()) {
-            UtilSpotify.logIntoSpotify(SpotifyEvent(SpotifyEventEnum.LoginOnly))
-        } else {
+        if (UtilSpotify.spotifyIsConnected()) {
             onConnected()
+        } else {
+            UtilSpotify.logIntoSpotify(SpotifyEvent(SpotifyEventEnum.LoginOnly))
         }
     }
 
@@ -135,10 +135,10 @@ class PlayerFragment : Fragment(), UtilSpotify.SpotifyListener {
         }
 
         playPauseButton.setOnClickListener {
-            if (!UtilSpotify.spotifyIsConnected()) {
-                UtilSpotify.logIntoSpotify(SpotifyEvent(SpotifyEventEnum.LoginAndPlayPause))
-            } else {
+            if (UtilSpotify.spotifyIsConnected()) {
                 UtilSpotify.playPause()
+            } else {
+                UtilSpotify.logIntoSpotify(SpotifyEvent(SpotifyEventEnum.LoginAndPlayPause))
             }
         }
 

@@ -27,10 +27,10 @@ class TrackProgress(val seekBar: SeekBar,
 
         override fun onStopTrackingTouch(seekBar: SeekBar) {
             val progress = seekBar.progress.toLong()
-            if (!UtilSpotify.spotifyIsConnected()) {
-                UtilSpotify.logIntoSpotify(SpotifyEvent(SpotifyEventEnum.LoginAndSeek, progress))
-            } else {
+            if (UtilSpotify.spotifyIsConnected()) {
                 UtilSpotify.seekTo(progress)
+            } else {
+                UtilSpotify.logIntoSpotify(SpotifyEvent(SpotifyEventEnum.LoginAndSeek, progress))
             }
         }
     }
