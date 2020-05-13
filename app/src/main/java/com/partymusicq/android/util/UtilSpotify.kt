@@ -39,7 +39,6 @@ class UtilSpotify {
                         if (canPlayOnDemand) {
                             spotifyListener.onConnected()
                             when (event.event) {
-                                SpotifyEventEnum.LoginAndStartPlaying -> startPlaying()
                                 SpotifyEventEnum.LoginAndSeek -> seekTo(event.seekPos)
                                 SpotifyEventEnum.LoginAndPlayPause -> playPause()
                                 else -> {}
@@ -70,11 +69,15 @@ class UtilSpotify {
             }
         }
 
-        fun startPlaying() {
-            spotifyAppRemote?.connectApi?.connectSwitchToLocalDevice()
-            //TODO: remove this whenever we have the ability to create a song queue
-            spotifyAppRemote?.playerApi?.setShuffle(true)
-            spotifyAppRemote?.playerApi?.play("spotify:playlist:6WGyoQqHDANYrzJJZFWZqe")
+        fun startPlaying(uri: String?) {
+            if (!uri.isNullOrEmpty()) {
+                spotifyAppRemote?.playerApi?.play(uri)
+            }
+        }
+
+        fun restartSong() {
+            spotifyAppRemote?.playerApi?.seekTo(0)
+            spotifyAppRemote?.playerApi?.resume()
         }
 
         fun seekTo(pos: Long?) {
@@ -98,6 +101,14 @@ class UtilSpotify {
             }
         }
 
+        fun getSpotifyAppRemote(): SpotifyAppRemote? {
+            return spotifyAppRemote
+        }
+
+        fun spotifyIsConnected(): Boolean {
+            return spotifyAppRemote?.isConnected ?: false
+        }
+
         private fun resume() {
             spotifyAppRemote?.playerApi
                 ?.resume()
@@ -113,16 +124,16 @@ class UtilSpotify {
         }
 
         @JvmStatic
-        var spotifyAppRemote : SpotifyAppRemote? = null
+        private var spotifyAppRemote : SpotifyAppRemote? = null
 
         @JvmStatic
-        lateinit var spotifyListener: SpotifyListener
+        private lateinit var spotifyListener: SpotifyListener
 
         @JvmStatic
-        var context: Context? = null
+        private var context: Context? = null
 
         @JvmStatic
-        var canPlayOnDemand = false
+        private var canPlayOnDemand = false
 
         private const val TAG = "UtilSpotify"
         private const val REDIRECT_URL = "http://com.partymusicq.android/callback"

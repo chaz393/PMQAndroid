@@ -5,19 +5,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatSeekBar
 import androidx.fragment.app.Fragment
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QuerySnapshot
 import com.partymusicq.android.R
 import com.partymusicq.android.enums.SpotifyEventEnum
 import com.partymusicq.android.event.SpotifyEvent
+import com.partymusicq.android.pojo.Song
+import com.partymusicq.android.pojo.SongQueue
 import com.partymusicq.android.ui.adapter.TrackProgress
 import com.partymusicq.android.util.UtilPlayer
 import com.partymusicq.android.util.UtilSpotify
-import com.partymusicq.android.util.UtilSpotify.Companion.spotifyAppRemote
 import com.spotify.protocol.types.Image
-import com.spotify.protocol.types.Track
+import com.spotify.protocol.types.PlayerState
 
 class PlayerFragment : Fragment(), UtilSpotify.SpotifyListener {
 
@@ -31,6 +35,9 @@ class PlayerFragment : Fragment(), UtilSpotify.SpotifyListener {
     private lateinit var prevButton: AppCompatImageButton
     private lateinit var playPauseButton: AppCompatImageButton
     private lateinit var nextButton: AppCompatImageButton
+
+    private lateinit var firestore: FirebaseFirestore
+    private lateinit var songQueue: SongQueue
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.player_fragment, container, false)
@@ -47,60 +54,105 @@ class PlayerFragment : Fragment(), UtilSpotify.SpotifyListener {
 
         trackProgress = TrackProgress(seekBar, songPositionText)
 
+        initFirebaseAndSpotify()
         setupOnClicks()
-
-        UtilSpotify.init(this, context)
-        if (spotifyAppRemote == null || !spotifyAppRemote!!.isConnected) {
-            UtilSpotify.logIntoSpotify(SpotifyEvent(SpotifyEventEnum.LoginAndStartPlaying))
-        } else {
-            onConnected()
-        }
-
         return view
     }
 
     override fun onConnected() {
-        spotifyAppRemote?.playerApi?.subscribeToPlayerState()?.setEventCallback {
-            val track: Track = it.track
-            trackTextView.text = track.name
-            artistText.text = track.artist.name
-            spotifyAppRemote?.imagesApi?.getImage(track.imageUri, Image.Dimension.LARGE)
-                ?.setResultCallback { bitmap ->
-                    albumArtImageView.setImageBitmap(bitmap)
-                }
-            trackProgress.setDuration(track.duration)
-            trackProgress.update(it.playbackPosition)
-            songDurationText.text = UtilPlayer.msToFormattedTime(track.duration)
-            if(it.isPaused){
-                playPauseButton.setImageResource(R.drawable.btn_play)
-                trackProgress.pause()
-            } else {
-                playPauseButton.setImageResource(R.drawable.btn_pause)
-                trackProgress.unPause()
-            }
+        playNextSong() //temporary. TODO remove when i make the play pause button able to initiate playback
+
+        UtilSpotify.getSpotifyAppRemote()?.playerApi?.subscribeToPlayerState()?.setEventCallback {
+            setupPlayer(it)
         }
     }
 
+    private fun setupPlayer(playerState: PlayerState) {
+        setTrackFields(playerState)
+        setAlbumArt(playerState)
+        setPlayPauseButton(playerState)
+    }
+
+    private fun setTrackFields(playerState: PlayerState) {
+        val track = playerState.track
+        trackTextView.text = track.name
+        artistText.text = track.artist.name
+        trackProgress.setDuration(track.duration)
+        trackProgress.update(playerState.playbackPosition)
+        songDurationText.text = UtilPlayer.msToFormattedTime(track.duration)
+    }
+
+    private fun setAlbumArt(playerState: PlayerState) {
+        UtilSpotify.getSpotifyAppRemote()?.imagesApi?.getImage(playerState.track.imageUri, Image.Dimension.LARGE)
+            ?.setResultCallback { bitmap ->
+                albumArtImageView.setImageBitmap(bitmap)
+            }
+    }
+
+    private fun setPlayPauseButton(playerState: PlayerState) {
+        if(playerState.isPaused){
+            playPauseButton.setImageResource(R.drawable.btn_play)
+            trackProgress.pause()
+        } else {
+            playPauseButton.setImageResource(R.drawable.btn_pause)
+            trackProgress.unPause()
+        }
+    }
+
+    private fun initFirebaseAndSpotify() {
+        firestore = FirebaseFirestore.getInstance()
+        val partyId = activity?.intent?.getStringExtra("partyId")
+        val songRef = firestore.collection("parties/$partyId/queue")
+        songRef.get().addOnSuccessListener {
+            initSongQueue(it)
+            initSpotify()
+        }
+    }
+
+    private fun initSpotify() {
+        UtilSpotify.init(this, context)
+        if (UtilSpotify.spotifyIsConnected()) {
+            onConnected()
+        } else {
+            UtilSpotify.logIntoSpotify(SpotifyEvent(SpotifyEventEnum.LoginOnly))
+        }
+    }
+
+    private fun initSongQueue(querySnapshot: QuerySnapshot) {
+        val songList = ArrayList<Song>()
+        for (document in querySnapshot.documents) {
+            val song = document.toObject(Song::class.java)
+            if (song != null) {
+                songList.add(Song(song, document.id))
+            }
+        }
+        this.songQueue = SongQueue(songList)
+    }
+
     private fun setupOnClicks() {
-        prevButton.setOnClickListener(object : View.OnClickListener{
-            override fun onClick(p0: View?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        prevButton.setOnClickListener {
+            UtilSpotify.restartSong()
+        }
+
+        playPauseButton.setOnClickListener {
+            if (UtilSpotify.spotifyIsConnected()) {
+                UtilSpotify.playPause()
+            } else {
+                UtilSpotify.logIntoSpotify(SpotifyEvent(SpotifyEventEnum.LoginAndPlayPause))
             }
-        })
-        playPauseButton.setOnClickListener(object : View.OnClickListener{
-            override fun onClick(p0: View?) {
-                if (spotifyAppRemote == null || spotifyAppRemote?.isConnected != true) {
-                    UtilSpotify.logIntoSpotify(SpotifyEvent(SpotifyEventEnum.LoginAndPlayPause))
-                } else {
-                    UtilSpotify.playPause()
-                }
-            }
-        })
-        nextButton.setOnClickListener(object : View.OnClickListener{
-            override fun onClick(p0: View?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-        })
+        }
+
+        nextButton.setOnClickListener {
+            playNextSong()
+        }
+    }
+
+    private fun playNextSong() {
+        if (songQueue.queueIsNotEmpty()) {
+            UtilSpotify.startPlaying(songQueue.getNextSongAndPop())
+        } else {
+            Toast.makeText(context, "Queue is empty", Toast.LENGTH_SHORT).show()
+        }
     }
 
     companion object {
