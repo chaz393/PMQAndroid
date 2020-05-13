@@ -70,24 +70,26 @@ class HomeActivity : BaseActivity(), PartyAdapter.OnQueueSelectedListener {
 
     private fun setupOnClicks() {
         hostButton.setOnClickListener { view ->
-            Toast.makeText(view?.context, "host pressed", Toast.LENGTH_SHORT).show()
-            if (partyNameEditText.text.isNotEmpty()) {
-                val handler = HostPartyHandler(partyNameEditText.text.toString())
-                val partyId = handler.handle()
-                if (!partyId.isNullOrEmpty()) {
-                    val intent = Intent(view?.context, PartyActivity::class.java)
-                    intent.putExtra("partyId", partyId)
-                    startActivity(intent)
-                }
-            } else {
-                Toast.makeText(view?.context, "Party name can't be empty", Toast.LENGTH_SHORT).show()
-            }
-
+            hostParty()
         }
 
         joinButton.setOnClickListener { p0 ->
             Toast.makeText(p0?.context, "join pressed", Toast.LENGTH_SHORT).show()
             //TODO: do something
+        }
+    }
+    
+    private fun hostParty() {
+        if (partyNameEditText.text.isNotEmpty()) {
+            val handler = HostPartyHandler(partyNameEditText.text.toString())
+            val partyId = handler.handle()
+            if (!partyId.isNullOrEmpty()) {
+                val intent = Intent(this, PartyActivity::class.java)
+                intent.putExtra("partyId", partyId)
+                startActivity(intent)
+            }
+        } else {
+            Toast.makeText(this, "Party name can't be empty", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -104,13 +106,11 @@ class HomeActivity : BaseActivity(), PartyAdapter.OnQueueSelectedListener {
 
     override fun onQueueSelected(queue: DocumentSnapshot) {
         val party = queue.toObject(Party::class.java)
-        if(party != null) {
-            val partyId = party.id
-            if (!partyId.isNullOrEmpty()) {
-                val intent = Intent(this, PartyActivity::class.java)
-                intent.putExtra("partyId", partyId)
-                startActivity(intent)
-            }
+        val partyId = party?.id
+        if (!partyId.isNullOrEmpty()) {
+            val intent = Intent(this, PartyActivity::class.java)
+            intent.putExtra("partyId", partyId)
+            startActivity(intent)
         } else {
             Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show()
         }

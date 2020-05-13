@@ -105,6 +105,10 @@ class UtilSpotify {
             return spotifyAppRemote
         }
 
+        fun spotifyIsConnected(): Boolean {
+            return spotifyAppRemote?.isConnected ?: false
+        }
+
         private fun resume() {
             spotifyAppRemote?.playerApi
                 ?.resume()

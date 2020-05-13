@@ -21,7 +21,7 @@ import com.partymusicq.android.ui.adapter.TrackProgress
 import com.partymusicq.android.util.UtilPlayer
 import com.partymusicq.android.util.UtilSpotify
 import com.spotify.protocol.types.Image
-import com.spotify.protocol.types.Track
+import com.spotify.protocol.types.PlayerState
 
 class PlayerFragment : Fragment(), UtilSpotify.SpotifyListener {
 
@@ -54,36 +54,52 @@ class PlayerFragment : Fragment(), UtilSpotify.SpotifyListener {
 
         trackProgress = TrackProgress(seekBar, songPositionText)
 
-        initFirebase()
+        initFirebaseAndSpotify()
         setupOnClicks()
         return view
     }
 
     override fun onConnected() {
-        playNextSong()
+        playNextSong() //temporary. TODO remove when i make the play pause button able to initiate playback
 
         UtilSpotify.getSpotifyAppRemote()?.playerApi?.subscribeToPlayerState()?.setEventCallback {
-            val track: Track = it.track
-            trackTextView.text = track.name
-            artistText.text = track.artist.name
-            UtilSpotify.getSpotifyAppRemote()?.imagesApi?.getImage(track.imageUri, Image.Dimension.LARGE)
-                ?.setResultCallback { bitmap ->
-                    albumArtImageView.setImageBitmap(bitmap)
-                }
-            trackProgress.setDuration(track.duration)
-            trackProgress.update(it.playbackPosition)
-            songDurationText.text = UtilPlayer.msToFormattedTime(track.duration)
-            if(it.isPaused){
-                playPauseButton.setImageResource(R.drawable.btn_play)
-                trackProgress.pause()
-            } else {
-                playPauseButton.setImageResource(R.drawable.btn_pause)
-                trackProgress.unPause()
-            }
+            setupPlayer(it)
         }
     }
 
-    private fun initFirebase() {
+    private fun setupPlayer(playerState: PlayerState) {
+        setTrackFields(playerState)
+        setAlbumArt(playerState)
+        setPlayPauseButton(playerState)
+    }
+
+    private fun setTrackFields(playerState: PlayerState) {
+        val track = playerState.track
+        trackTextView.text = track.name
+        artistText.text = track.artist.name
+        trackProgress.setDuration(track.duration)
+        trackProgress.update(playerState.playbackPosition)
+        songDurationText.text = UtilPlayer.msToFormattedTime(track.duration)
+    }
+
+    private fun setAlbumArt(playerState: PlayerState) {
+        UtilSpotify.getSpotifyAppRemote()?.imagesApi?.getImage(playerState.track.imageUri, Image.Dimension.LARGE)
+            ?.setResultCallback { bitmap ->
+                albumArtImageView.setImageBitmap(bitmap)
+            }
+    }
+
+    private fun setPlayPauseButton(playerState: PlayerState) {
+        if(playerState.isPaused){
+            playPauseButton.setImageResource(R.drawable.btn_play)
+            trackProgress.pause()
+        } else {
+            playPauseButton.setImageResource(R.drawable.btn_pause)
+            trackProgress.unPause()
+        }
+    }
+
+    private fun initFirebaseAndSpotify() {
         firestore = FirebaseFirestore.getInstance()
         val partyId = activity?.intent?.getStringExtra("partyId")
         val songRef = firestore.collection("parties/$partyId/queue")
@@ -95,7 +111,7 @@ class PlayerFragment : Fragment(), UtilSpotify.SpotifyListener {
 
     private fun initSpotify() {
         UtilSpotify.init(this, context)
-        if (UtilSpotify.getSpotifyAppRemote() == null || UtilSpotify.getSpotifyAppRemote()?.isConnected != true) {
+        if (!UtilSpotify.spotifyIsConnected()) {
             UtilSpotify.logIntoSpotify(SpotifyEvent(SpotifyEventEnum.LoginOnly))
         } else {
             onConnected()
@@ -119,7 +135,7 @@ class PlayerFragment : Fragment(), UtilSpotify.SpotifyListener {
         }
 
         playPauseButton.setOnClickListener {
-            if (UtilSpotify.getSpotifyAppRemote() == null || UtilSpotify.getSpotifyAppRemote()?.isConnected != true) {
+            if (!UtilSpotify.spotifyIsConnected()) {
                 UtilSpotify.logIntoSpotify(SpotifyEvent(SpotifyEventEnum.LoginAndPlayPause))
             } else {
                 UtilSpotify.playPause()
