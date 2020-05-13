@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">PMQ</string>
+    <string name="delete_party">delete</string>
 </resources>

@@ -13,6 +13,7 @@ open class PartyAdapter(query: Query, private val listener: OnQueueSelectedListe
 
     interface OnQueueSelectedListener {
         fun onQueueSelected(queue: DocumentSnapshot)
+        fun deleteParty(party: DocumentSnapshot)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -39,6 +40,9 @@ open class PartyAdapter(query: Query, private val listener: OnQueueSelectedListe
             binding.currentQueueRoomCode.text = queue.passCode
             binding.root.setOnClickListener {
                 listener?.onQueueSelected(snapshot)
+            }
+            binding.deletePartyButton.setOnClickListener {
+                listener?.deleteParty(snapshot)
             }
         }
     }
